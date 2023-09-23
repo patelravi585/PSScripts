@@ -1,0 +1,27 @@
+# Define the list of Storage Account names
+$storageAccountNames = @("StorageAcc1", "StorageAcc2")
+
+# Define the role and the user or group to assign the role
+$role = "Reader"
+$role2 = "Storage Blob Data Reader"
+$assigneePrincipalId = "####-#####-#####"
+
+# Loop through the list of Storage Accounts
+foreach ($storageAccountName in $storageAccountNames) {
+    # Get the Storage Account resource
+    
+    $storageAccount = Get-AzStorageAccount | Where-Object { $_.StorageAccountName -eq $storageAccountName }
+
+    # Get the Storage Account's scope
+    $storageAccountResourceId = $storageAccount.Id
+
+    # Check if the Storage Account exists
+    if ($storageAccount) {
+        # Add the role assignment
+        New-AzRoleAssignment -ObjectId $assigneePrincipalId -RoleDefinitionName $role -Scope $storageAccountResourceId
+        New-AzRoleAssignment -ObjectId $assigneePrincipalId -RoleDefinitionName $role2 -Scope $storageAccountResourceId
+        Write-Host "Role assignment added for Storage Account: $storageAccountName"
+    } else {
+        Write-Host "Storage Account not found: $storageAccountName"
+    }
+}
